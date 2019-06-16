@@ -1,2 +1,1 @@
-# ss_calendar_new
-日程管理系统
+ss_calendar_new

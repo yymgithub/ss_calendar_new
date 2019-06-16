@@ -1,0 +1,281 @@
+{extend name="common@public/base" /}
+{block name="main-content"}
+<!-- Content -->
+<div class="content">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="box-title">部门&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#smallmodal1">添加部门</button>
+                        </h4>
+                    </div>
+                    <div class="card-body--">
+                        <div class="table-stats">
+                            <table id="bootstrap-data-table" class="table dataTable">
+                                <thead>
+                                <tr>
+                                    <th class="serial" style="width: 15%">部门编号</th>
+                                    <th style="width: 25%">部门名称</th>
+                                    <th style="width: 20%">状态</th>
+                                    <th style="width: 40%">操作</th>
+                                </tr>
+                                </thead>
+                                <tbody id="depart_info"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .animated -->
+</div>
+<div class="modal fade" id="smallmodal1" tabindex="-1" role="dialog" aria-labelledby="smallmodalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scrollmodalLabel">添加部门</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </div>
+                        <input type="text" id="name" placeholder="部门描述" class="form-control" value="" >
+                    </div>
+                </div>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" onclick="addDepartment()">确认</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="smallmodal2" tabindex="-1" role="dialog" aria-labelledby="smallmodalLabel1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scrollmodalLabel1">编辑部门</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <input hidden id="tmp_id">
+            </div>
+            <div class="modal-body">
+                <p>
+                    <!--<div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-check-square-o"></i>
+                            </div>
+                            <input type="text" class="form-control" disabled="disabled">
+                        </div>
+                    </div>-->
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </div>
+                        <input type="text" id="depart_name" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-success" onclick="changeDepartmentName()">确认</button>
+            </div>
+              </p>
+        </div>
+    </div>
+</div>
+</div>
+<!-- /.content -->
+{/block}
+{block name="scripts"}
+<script type="text/javascript">
+    $(document).ready(function () {
+        console.log("hello");
+        loadTable();
+        //$('#bootstrap-data-table').DataTable();
+    });
+    function deleteDepartment(id) {
+        //用AJAX方式访问后台写的方法
+        $.ajax({
+            type: "POST",
+            url: 'delete',//你的请求程序页面随便
+            async: false,//同步：意思是当有返回值以后才会进行后面的js程序。
+            data: {
+                "id":id
+            },//请求需要发送的处理数据
+            success: function (msg) {
+                //console.log("success!")
+                //在这里刷新页面或者局部刷新表格
+                loadTable();
+            },
+            error: function (msg) {
+                alert("删除失败！");
+            }
+        });
+    }
+    //story:恢复部门 负责人：李梦好
+    //id:待恢复部门的id
+    //name:待恢复部门的名称
+    function recoverDepartment(id,name) {
+        //console.log("recover department of id "+id+name);
+        if(confirm("确认恢复部门 "+name+"吗？")){
+            //用AJAX方式访问后台写的方法
+            $.ajax({
+                type: "POST",
+                url: 'recover',//请求方法的路径
+                async: false,//同步：意思是当有返回值以后才会进行后面的js程序。
+                data: {
+                    "id":id//传递参数：待恢复部门的id
+                },//请求需要发送的处理数据
+                success: function (msg) {
+                    //msg包含status和message两个属性，status为1时是成功。
+                    if(msg.status==-1)//恢复失败
+                    {
+                        alert(msg.message);
+                    }else//成功
+                    {
+                        alert("恢复成功！");
+                        //在这里刷新页面或者局部刷新表格
+                        loadTable();
+                    }
+                },
+                error: function (msg) {
+                    alert("恢复失败！");
+                }
+            });
+        }
+    }
+
+    function loadTable() {
+        $.ajax({
+            type: "POST",
+            url: 'loadDepartment',//url地址，相对路径，已经在department控制器下
+            async: false,//同步：意思是当有返回值以后才会进行后面的js程序。
+            dataType: 'json',
+            success: function (data) {
+                //console.log(data);
+                var table_html = "";
+                var strs = ["未删除","已删除"];
+                for(var i=0;i<data.length;i++){
+                    if(data[i].is_delete == 1){
+                        table_html += '<tr style="background-color: #f1f2f7">' +
+                            '<td class="serial">'+(i+1)+'</td>' +
+                            '<td class="product">'+data[i].name+'</td>' +
+                            '<td class="product">'+strs[data[i].is_delete]+'</td>' +
+                            '<td><button type="button" onclick="recoverDepartment('+data[i].id+',\''+data[i].name+'\')"' +
+                            ' class="btn btn-recover btn-sm mb-1" >' +
+                            '<i class="fa fa-rotate-left"></i>&nbsp;恢复</button></td></tr>';
+                    }else {
+                        table_html +='<tr><td class="serial">'+(i+1)+'</td>' +
+                            '<td class="product">'+data[i].name+'</td>' +
+                            '<td class="product">'+strs[data[i].is_delete]+'</td>' +
+                            '<td><button type="button" class="btn btn-primary btn-sm mb-1"' +
+                            ' data-toggle="modal" data-target="#smallmodal2" ' +
+                            'onclick="editModalShow2('+data[i].id+','+'\''+data[i].name+'\')">' +
+                            '<i class="fa fa-magic"></i>&nbsp;编辑</button>&nbsp;&nbsp;&nbsp;&nbsp;' +
+                            '<button type="button" class="btn btn-danger btn-sm mb-1" ' +
+                            'onclick="deleteDepartment('+data[i].id+')">' +
+                            '<i class="fa fa-exclamation">' +
+                            '</i>&nbsp;删除</button></td></tr>';
+                    }
+                }
+                //更新表格体table body内容
+                $("#depart_info").html(table_html);
+            }
+        });
+    }
+
+    function addDepartment(name)
+    {
+        //console.log($("#name").val());
+        $.ajax({
+            type: "POST",
+            url: "add",
+            async: false,
+            //dataType: 'json',
+            data: {
+                "name":$("#name").val()
+            },
+            success: function(data){
+                //console.log(data);
+                if(data.status==1){
+                    alert(data.message);
+                    $("#smallmodal1").modal("hide");
+                    $('.modal-backdrop').remove();//去除遮罩层
+                    //loadTable();
+                    window.location.reload();
+                }else {
+                    alert(data.message);
+                }
+
+            }
+        });
+      
+    }
+    function editModalShow(id,name) {
+        $('#tmp_id').val(id);
+        $("#depart_name").val(name);
+    }
+  
+    function editModalShow2(id,name) {
+        $('#tmp_id').val(id);
+        $("#depart_name").val(name);
+        //$("#smallmodal2").modal("show");
+    }
+  
+    function changeDepartmentName(){
+        var id = $("#tmp_id").val();
+        var name = $('#depart_name').val().trim();
+       	var pattern="[^\u4e00-\u9fa5a-zA-Z0-9]";
+        if(name.length == 0){
+          alert("输入名称不能为空，请重新输入");
+        }else if(name.search(pattern)==true){
+            alert("输入名称不符合规范，请重新输入");
+        }else{
+            //用AJAX方式访问后台写的方法
+            $.ajax({
+                type: "POST",
+                url: 'change',//你的请求程序页面随便
+                async: false,//同步：意思是当有返回值以后才会进行后面的js程序。
+                data: {
+                    "id":id,
+                    "name":name
+                },//请求需要发送的处理数据
+                success: function (msg) {
+                    console.log("success!"+msg);
+                	if(msg==1){
+                    	alert("修改成功！");
+               	 	}
+                	else if(msg==-1){
+                    	alert("用户名重复，请重新输入！");
+                	}
+                    else if(msg==-2){
+                    	alert("用户名过长，请重新输入！");
+                	}
+                    else if(msg==-3){
+                    	alert("用户不符合规范，请重新输入！");
+                	}
+                    $("#smallmodal2").modal("hide");
+                    $('.modal-backdrop').remove();//去除遮罩层
+                    //在这里刷新页面或者局部刷新表格
+                    //loadTable();
+                    window.location.reload();
+                }
+            });
+        }
+
+    }
+</script>
+{/block}

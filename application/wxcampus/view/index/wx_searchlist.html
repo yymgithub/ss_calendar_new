@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%;">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/2.0.0/weui.css">
+    <title>搜索结果</title>
+</head>
+<body ontouchstart style="height: 100%; background-color: #ededed">
+<div class="weui-tab">
+    <div class="weui-tab__panel">
+        <div class="weui-panel weui-panel_access">
+            <a class="weui-cell weui-cell_example" href="wx_agenda.html">
+                <div class="weui-cell__hd"><img src="__STATIC__/wx/img/s.jpg" alt=""
+                                                style="width:50px;margin-right:16px;display:block;border-radius: 5px">
+                </div>
+                <div class="weui-cell__bd">
+                    <h4 class="weui-media-box__title">用户：{$query.name} | {$query.work_id}</h4>
+                  {if condition="$result neq NULL"}
+                	{foreach $result as $schedule}
+                    <p class="weui-media-box__desc">{$schedule.depart} | {$schedule.position}</p>            
+                  	<p class="weui-media-box__desc">日程：{$schedule.place} - {$schedule.time} - {$schedule.item} </p>
+                </div>
+                  	{/foreach}
+            	{else /}<p class="weui-media-box__desc">无数据！</p>
+            	{/if}
+              
+            </a>
+            
+
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

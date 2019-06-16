@@ -1,0 +1,45 @@
+{extend name="common@public/base" /}
+{block name='main-content'}
+
+<!-- Content -->
+<div classs="content">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="table-stats">
+                		<table id="bootstrap-data-table" class="table">
+                			<thead>
+                				<tr>
+                					<th>序号</th>
+                					<th>日期</th>
+                                    <th>时间</th>
+                					<th>地点</th>
+                					<th>事项</th>
+                					<th>备注</th>
+                				</tr>
+                			</thead>
+                			<tbody>
+                				{volist name='schedule_info' id='list'}
+                				<tr data-id={$list.id}>
+                					<td>{$i}</td>
+                					<td>{$list.date}</td>
+                                    <td>{$list.time}</td>
+                					<td>{$list.location}</td>
+                					<td>{$list.event}</td>
+                					<td>{$list.note}</td>
+                				</tr>
+                				{/volist}
+                			</tbody>
+                		</table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{/block}
+
+{block name="script"}
+{/block}

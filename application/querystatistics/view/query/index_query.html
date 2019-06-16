@@ -1,0 +1,57 @@
+{extend name="common@public/base" /}
+{block name='main-content'}
+
+<!-- Content -->
+<div class="content">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="box-title">个人日程查询&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+                            <form action="{:url('Query/query')}" method="get">
+                            开始时间<input type="date" name="starttime" placeholder="starttime">
+                             结束时间<input type="date" name="endtime" placeholder="endtime">
+                            <button type="submit" id="add" class="btn btn-success btn-sm" data-toggle="modal"
+                                data-target=".add-schedule">查询</button>
+                            </form>
+                        </h4>
+                    </div>
+                    <div class="card-body--">
+                        <div class="table-stats">
+                            <table id="bootstrap-data-table" class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="serial">序号</th>
+                                        <th>日期</th>
+                                        <th>时间</th>
+                                        <th>地点</th>
+                                        <th>事项</th>
+                                        <th>备注</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {foreach name="schedule_info" item="vo"}
+                                    <tr>
+                                        <td class="serial">{$key+1}</td>
+                                        <td><span class="product">{$vo['date']}</span></td>
+                                        <td><span class="product">{$vo['time']}</span></td>
+                                        <td><span class="product">{$vo['location']}</span></td>
+                                        <td><span class="product">{$vo['event']}</span></td>
+                                        <td><span class="product">{$vo['note']}</span></td>
+                                    </tr>
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .animated -->
+</div>
+{/block}
+
+{block name="scripts"}
+{/block}

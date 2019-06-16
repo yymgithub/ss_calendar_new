@@ -1,0 +1,77 @@
+{extend name="common@public/base" /}
+{block name="main-content"}
+<!-- Content -->
+<div class="content">
+    <div class="animated fadeIn">                
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                  	<div class="card-body">
+                  		<h4 class="box-title">日程查询&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <div class="col-sm-12 col-md-6">
+                                <label>查询：</label>
+                                <input type="text" id="keyword" onkeyup="search()" placeholder="按姓名查询"> &nbsp; 
+                                <button id="search_btn" onclick="search()">查询</button>
+                            </div>
+                     	</h4>
+     			   	</div>
+                    <div class="card-body--">
+                        <div class="table-stats">
+                            <table id="bootstrap-data-table" class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="serial">序号</th>
+                                        <th>姓名</th>
+                                        <th>日期</th>
+                                        <th>时间</th>
+                                        <th>地点</th>
+                                        <th>事项</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {notempty name="arealist"}
+                                    {foreach name="arealist" item="arealist"}
+                                    <tr>
+                                        <td class="serial">{$key+1}</td> 
+                                        <td>  <span class="product">{$arealist['name']}</span></td>
+                                        <td>  <span class="product">{$arealist['date']}</span></td>
+                                        <td>  <span class="product">{$arealist['time']}</span></td>
+                                        <td>  <span class="product">{$arealist['place']}</span></td>
+                                        <td>  <span class="product">{$arealist['item']}</span></td>                                            
+                                    </tr> 
+                                    {/foreach}
+                                {/notempty}                     
+                                </tbody>                                
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .animated -->
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        function search(keyword){
+            var keyword = $("#keyword").val();
+            $.ajax({
+                type: "POST",
+                url: 'Query',
+                async: false,
+                dataType: "json",
+                data: {
+                    "keyword": keyword,                        
+                },  //请求需要发送的处理数据，用户在搜索框中的输入内容，当前日期的年月日
+                success: function (msg) {
+                    console.log("success!")
+                    //在这里刷新页面或者局部刷新表格
+                }
+            });
+        }
+});            
+</script>
+
+<!-- /.content -->
+{/block}
